@@ -1,6 +1,6 @@
 ![we-render](docs/cover.png)
 
-**Your wallpaper, as a file.** An English Linux CLI for original video extraction
+**Your wallpaper, as a file.** Linux CLI for original video extraction
 and native scene export. No Windows, Wine or desktop recording.
 
 > **0.1.0b1 · Beta.** The frame-export pipeline is tested; integration with a real
