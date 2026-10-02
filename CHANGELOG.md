@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0b3
+
+- Removed the vendored Rich/Pygments/markdown stack; terminal UI now uses the Python standard library only.
+- Repository reduced from hundreds of vendored files to the actual project source, tests and release tooling.
+- Replaced the Python installer with one small non-interactive `install.sh`.
+- Removed obsolete publishing, architecture, testing and setup documents from the user-facing repository.
+- Linux release ZIP now contains only the app, installer, README and legal notices.
+- Release notes are generated automatically by GitHub.
+
 ## 0.1.0b2
 
 - Fixed native bridge startup when CEF/helper subprocesses inherit `LD_PRELOAD` without the frame pipe.
