@@ -67,6 +67,7 @@ def build(out=None):
         add(z,"we-render/we-render.pyz",app.read_bytes(),True)
         for name in ("install.sh","README.md","LICENSE","THIRD_PARTY.md"):
             add(z,"we-render/"+name,(ROOT/name).read_bytes(),name.endswith(".sh"))
+        add(z,"we-render/docs/cover.png",(ROOT/"docs/cover.png").read_bytes())
 
     sums=[app,source,portable]
     (out/"SHA256SUMS").write_text(
