@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 import shlex
 import shutil
-import subprocess
 import sys
 import tempfile
 
@@ -25,26 +24,10 @@ def atomic(path,data,mode):
         try:os.unlink(name)
         except FileNotFoundError:pass
 
-def dependencies():
-    if shutil.which('pacman'):
-        cmd=['sudo','pacman','-S','--needed','python','ffmpeg','gcc','xorg-xwayland']
-    elif shutil.which('apt-get'):
-        cmd=['sudo','apt-get','install','python3','ffmpeg','gcc','xwayland']
-    else:
-        print('Install Python 3.10+, FFmpeg, a C compiler, XWayland and linux-wallpaperengine with your distribution tools.');return
-    print('System packages:',shlex.join(cmd))
-    if input('Run this command? [y/N] ').lower()=='y':subprocess.run(cmd,check=True)
-    if not shutil.which('linux-wallpaperengine'):
-        helper=shutil.which('yay') or shutil.which('paru')
-        if helper:
-            print('Scene export uses the third-party AUR package linux-wallpaperengine-git. Review its build files in the helper.')
-            if input('Start the AUR helper? [y/N] ').lower()=='y':subprocess.run([helper,'-S','--needed','linux-wallpaperengine-git'],check=True)
-        else:print('Native renderer still required: install Almamu/linux-wallpaperengine as described in docs/USAGE.md.')
-
 def main(argv=None):
     ap=argparse.ArgumentParser(description='Install WE Render under your user prefix.')
     ap.add_argument('--prefix',type=Path,default=Path.home()/'.local')
-    ap.add_argument('--uninstall',action='store_true');ap.add_argument('--deps',action='store_true')
+    ap.add_argument('--uninstall',action='store_true')
     args=ap.parse_args(argv)
     prefix=args.prefix.expanduser().resolve();folder=prefix/'share/we-render';launcher=prefix/'bin/we-render'
     manifest=folder/'install.json';app=folder/'we-render.pyz'
@@ -65,7 +48,6 @@ def main(argv=None):
             except OSError:pass
             print('Uninstalled. Your exports, Steam files and cache were kept.');return 0
         if sys.version_info<(3,10):raise RuntimeError('Python 3.10 or newer is required.')
-        if args.deps:dependencies()
         folder.mkdir(parents=True,exist_ok=True);launcher.parent.mkdir(parents=True,exist_ok=True)
         source=ROOT/'we-render.pyz'
         if not source.is_file():
@@ -84,6 +66,6 @@ def main(argv=None):
             print(f'Add {launcher.parent} to PATH. For fish: fish_add_path {shlex.quote(str(launcher.parent))}')
         print('The CLI is installed; scene export also needs the native renderer and your Wallpaper Engine assets.')
         return 0
-    except (OSError,ValueError,RuntimeError,subprocess.CalledProcessError,KeyboardInterrupt,EOFError) as exc:
+    except (OSError,ValueError,RuntimeError,KeyboardInterrupt,EOFError) as exc:
         print('Install stopped: '+str(exc),file=sys.stderr);return 1
 if __name__=='__main__':raise SystemExit(main())
