@@ -16,7 +16,7 @@ def build(path):
 def test_portable_isolated(tmp_path):
     app=build(tmp_path/'we-render.pyz')
     p=subprocess.run([sys.executable,'-I','-S',str(app),'--version'],capture_output=True,text=True)
-    assert p.returncode==0 and p.stdout.strip()=='0.1.0b1'
+    assert p.returncode==0 and p.stdout.strip()=='0.1.0b2'
     p=subprocess.run([sys.executable,'-I','-S',str(app),'--help'],capture_output=True,text=True)
     assert p.returncode==0 and '--wizard' in p.stdout
     with zipfile.ZipFile(app) as z:
@@ -32,7 +32,7 @@ def test_install_uninstall(tmp_path):
     cmd=[sys.executable,str(ROOT/'install.py'),'--prefix',str(prefix)]
     p=subprocess.run(cmd,capture_output=True,text=True);assert p.returncode==0,p.stderr
     launch=prefix/'bin/we-render';assert launch.is_file()
-    p=subprocess.run([str(launch),'--version'],capture_output=True,text=True);assert p.returncode==0 and p.stdout.strip()=='0.1.0b1'
+    p=subprocess.run([str(launch),'--version'],capture_output=True,text=True);assert p.returncode==0 and p.stdout.strip()=='0.1.0b2'
     (prefix/'kept.mp4').write_bytes(b'keep')
     assert subprocess.run(cmd+['--uninstall'],capture_output=True).returncode==0
     assert not launch.exists() and (prefix/'kept.mp4').read_bytes()==b'keep'
@@ -48,15 +48,6 @@ def test_installer_keeps_modifications(tmp_path):
     target=tmp_path/'bin/we-render';target.write_text('modified')
     assert subprocess.run(args+['--uninstall'],capture_output=True).returncode==1
     assert target.read_text()=='modified'
-
-def test_publish_dry_run_no_git_changes(tmp_path):
-    p=subprocess.run([sys.executable,str(ROOT/'tools/publish.py'),'--dry-run'],capture_output=True,text=True)
-    assert p.returncode==0 and 'PUBLIC' in p.stdout and 'DRAFT' in p.stdout
-    assert not (ROOT/'.git').exists()
-
-def test_publish_bad_name():
-    p=subprocess.run([sys.executable,str(ROOT/'tools/publish.py'),'--name','../../bad','--dry-run'],capture_output=True)
-    assert p.returncode!=0
 
 def test_workflows_parse():
     yaml=pytest.importorskip('yaml')

@@ -57,3 +57,22 @@ def test_native_cancel(tmp_path,fixture_engine):
     s=Source(tmp_path,'scene','cancel',tmp_path,160,90)
     with pytest.raises(KeyboardInterrupt):render(s,tmp_path/'out',assets,Options(duration=120,warmup=0),str(fixture_engine),cancel)
     assert not list((tmp_path/'out').glob('*.mp4'))
+
+
+def test_inherited_helper_env_is_passive():
+    bridge=build_bridge()
+    env={**os.environ,'LD_PRELOAD':str(bridge),'WE_RENDER_ACTIVE':'1','WE_RENDER_FD':'999999'}
+    p=subprocess.run(['/bin/true'],env=env,capture_output=True,text=True)
+    assert p.returncode==0
+    assert 'Missing bridge configuration' not in p.stderr
+
+def test_owned_renderer_missing_config_is_fatal():
+    bridge=build_bridge()
+    read_fd,write_fd=os.pipe()
+    try:
+        env={**os.environ,'LD_PRELOAD':str(bridge),'WE_RENDER_ACTIVE':'1','WE_RENDER_FD':str(write_fd)}
+        p=subprocess.run(['/bin/true'],env=env,pass_fds=(write_fd,),capture_output=True,text=True)
+        assert p.returncode==71
+        assert 'Missing bridge configuration' in p.stderr
+    finally:
+        os.close(read_fd);os.close(write_fd)

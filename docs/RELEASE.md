@@ -1,18 +1,16 @@
-# WE Render 0.1.0b1
+# WE Render 0.1.0b2
 
-**Beta — native scene integration has not yet been validated with a real
-linux-wallpaperengine build.** This is not a universal scene converter.
+Beta release.
 
-Download the **linux.zip**, unpack, run `./install.sh`, then `we-render`.
-The source archive is for contributors. The `.pyz` is the standalone Python app;
-Python and system/native dependencies are not inside it.
+Highlights:
+- fixes the native bridge helper-process startup bug seen with CEF;
+- cleaner startup errors;
+- non-interactive installer;
+- smaller, cleaner end-user release bundle;
+- pre-rendered MPKG extraction remains byte-preserving.
 
-Original pre-rendered MPKG video extraction and standard media conversion are
-implemented and tested. Native rendering uses a separate engine's hidden OpenGL
-buffer and a fixed GLFW clock. The synthetic GLX-to-FFmpeg pipeline is tested,
-including six 4K60 frames; real scene effects, Hyprland and NVENC are not yet verified.
+Install the Linux ZIP with `./install.sh`, then run `we-render --doctor`.
 
-Needs: Linux, Python 3.10+, FFmpeg for conversion. Scene path additionally needs
-Almamu/linux-wallpaperengine, owned Wallpaper Engine assets, `cc`, X11/XWayland.
-No Windows/Wine/Proton, desktop recording, telemetry or bundled proprietary assets.
-See `docs/TESTING.md` for the exact verification boundary.
+Native scene rendering still depends on a compatible `linux-wallpaperengine`, Wallpaper Engine assets, FFmpeg and X11/XWayland. Scene fidelity is not guaranteed for every wallpaper.
+
+No Windows, Wine, Proton, desktop recording, telemetry or proprietary assets are bundled.

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.0b2
+
+- Fixed native bridge startup when CEF/helper subprocesses inherit `LD_PRELOAD` without the frame pipe.
+- Added regression coverage for helper-process bridge activation.
+- Improved renderer/bridge startup error messages.
+- Removed the obsolete first-publish helper and its CI-only test.
+- Made the installer non-interactive; it no longer invokes package managers or AUR helpers.
+- Simplified the README and Linux release bundle.
+
+Native scene fidelity still depends on the external Linux renderer and remains beta.
+
 ## 0.1.0b1
 
 First WE Render beta, building on the preceding WE Export experiments.

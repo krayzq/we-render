@@ -51,7 +51,13 @@ def header(fd,proc,timeout):
         if len(data)>128:raise ExportError('Invalid renderer protocol header.')
         if select.select([fd],[],[],0.2)[0]:
             c=os.read(fd,1)
-            if not c:raise ExportError('Renderer exited without frames. Inspect the log for missing assets or unsupported effects.')
+            if not c:
+                code=proc.poll()
+                if code==71:
+                    raise ExportError('Native frame bridge stopped during startup (exit 71). Inspect the log for bridge compatibility or configuration details.')
+                if code is not None:
+                    raise ExportError(f'Renderer exited before frame handoff (exit {code}). Inspect the log for renderer/bridge startup details.')
+                raise ExportError('Renderer closed the frame pipe before producing frames. Inspect the log for renderer/bridge startup details.')
             if c==b'\n':
                 try:
                     sig,w,h,fps=data.decode('ascii').split()
@@ -59,8 +65,12 @@ def header(fd,proc,timeout):
                     return int(w),int(h),int(fps)
                 except (ValueError,UnicodeError) as exc:raise ExportError('Invalid renderer frame protocol.') from exc
             data+=c
-        if proc.poll() is not None:raise ExportError('Renderer stopped before producing a frame; no video was published.')
-    raise ExportError('Renderer startup timed out. This build may be incompatible with the GLFW adapter, or the scene may take longer to warm up. Inspect the log; --startup-timeout can be increased.')
+        if proc.poll() is not None:
+            code=proc.returncode
+            if code==71:
+                raise ExportError('Native frame bridge stopped during startup (exit 71). Inspect the log for bridge compatibility or configuration details.')
+            raise ExportError(f'Renderer stopped before producing a frame (exit {code}); no video was published.')
+    raise ExportError('Renderer startup timed out before frame handoff. This build may be incompatible with the GLFW bridge, or the scene may need more warm-up time. Inspect the log; --startup-timeout can be increased.')
 
 
 def render(source,output,assets,opts,renderer,callback):
