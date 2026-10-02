@@ -1,4 +1,4 @@
-# Validation — 0.1.0b1
+# Validation — 0.1.0b2
 
 ## What was actually run
 
@@ -18,8 +18,7 @@ The test suite covers input/URL validation, Steam-library discovery, source boun
 MPKG selection, refusal to substitute a preview for a scene, collisions/symlinks,
 source changes, original-byte extraction, real FFmpeg conversion, resolution/FPS,
 malformed input and cancellation. Distribution tests also exercised isolated `python -I -S` startup, reproducible
-zipapp builds, installation/removal, protecting modified files, publication dry-run,
-workflow YAML parsing and the real interactive terminal menu.
+zipapp builds, installation/removal, protecting modified files, workflow YAML parsing and the real interactive terminal menu.
 
 **Native tests use a small GLFW-shaped ABI fixture over real X11/GLX/OpenGL.**
 It draws a synthetic red/blue animation. It is not GLFW itself and does not parse
@@ -63,3 +62,7 @@ Release checksums are provided for file integrity; they are not cryptographic si
 The source installer, launcher and uninstaller were also run successfully as the
 unprivileged `nobody` account in a temporary prefix. The application source was
 read-only to that account. This did not install system dependencies or test Hyprland.
+
+## 0.1.0b2 regression
+
+Adds a regression test for renderer helper processes that inherit the bridge environment. Helper processes must stay passive when the export pipe is unavailable, while the intended renderer process still rejects incomplete bridge configuration.
