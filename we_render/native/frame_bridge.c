@@ -53,23 +53,51 @@ static long number(const char *key, long lo, long hi) {
     if (errno || *end || n < lo || n > hi) fail("Invalid bridge configuration");
     return n;
 }
+static int inherited_output_fd(void) {
+    /*
+     * LD_PRELOAD is inherited by CEF/helper exec children, while the frame pipe
+     * is intentionally FD_CLOEXEC. Treat a missing/closed pipe as proof that
+     * this process is a helper and leave the bridge completely passive.
+     */
+    const char *value = getenv("WE_RENDER_FD");
+    char *end = NULL;
+    if (!value || !*value) return -1;
+    errno = 0;
+    long n = strtol(value, &end, 10);
+    if (errno || *end || n < 3 || n > INT_MAX) return -1;
+    if (fcntl((int)n, F_GETFD) < 0) return -1;
+    return (int)n;
+}
 __attribute__((constructor)) static void init(void) {
-    if (!getenv("WE_RENDER_ACTIVE") || strcmp(getenv("WE_RENDER_ACTIVE"), "1")) return;
-    /* CEF/other exec children must not start an independent export. */
+    const char *flag = getenv("WE_RENDER_ACTIVE");
+    if (!flag || strcmp(flag, "1")) return;
+
+    /* A CEF/other exec helper keeps the environment but not the CLOEXEC pipe. */
+    int candidate_fd = inherited_output_fd();
+    if (candidate_fd < 0) return;
+
     const char *previous = getenv("WE_RENDER_OWNER");
-    if (previous && strtol(previous, NULL, 10) != (long)getpid()) return;
+    if (previous && *previous) {
+        char *end = NULL;
+        errno = 0;
+        long previous_pid = strtol(previous, &end, 10);
+        if (!errno && end && !*end && previous_pid != (long)getpid()) return;
+    }
+
     owner = getpid();
     char own[32]; snprintf(own, sizeof own, "%ld", (long)owner);
     setenv("WE_RENDER_OWNER", own, 1);
-    data_fd = (int)number("WE_RENDER_FD", 3, INT_MAX);
+    data_fd = candidate_fd;
+
+    /* From here on this is the intended renderer process: bad config is fatal. */
     wanted_w = (int)number("WE_RENDER_WIDTH", 2, 16384);
     wanted_h = (int)number("WE_RENDER_HEIGHT", 2, 16384);
     if ((uint64_t)wanted_w * wanted_h > 67108864) fail("Frame exceeds safety limit");
     fps = (int)number("WE_RENDER_FPS", 1, 240);
     warmup = (int)number("WE_RENDER_WARMUP", 0, 14400);
     frames = (int)number("WE_RENDER_FRAMES", 1, 864000);
-    if (fcntl(data_fd, F_GETFD) < 0) fail("Invalid output descriptor");
-    fcntl(data_fd, F_SETFD, FD_CLOEXEC);
+
+    if (fcntl(data_fd, F_SETFD, FD_CLOEXEC) < 0) fail("Cannot protect output descriptor");
     signal(SIGPIPE, SIG_IGN);
     enabled = 1;
 }
