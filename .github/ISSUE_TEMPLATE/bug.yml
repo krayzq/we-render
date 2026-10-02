@@ -1,0 +1,25 @@
+name: Export problem
+description: Report a failed or visually incorrect export
+title: "[Export] "
+body:
+  - type: markdown
+    attributes:
+      value: "Do not upload proprietary assets, paid wallpapers, tokens or passwords. Logs may contain local paths."
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Linux distro, desktop, GPU/driver, native renderer version and we-render --doctor output
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and result
+      description: Command, public Workshop ID when available, expected vs actual result
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Redacted log

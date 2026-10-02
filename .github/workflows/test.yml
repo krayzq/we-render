@@ -1,0 +1,30 @@
+name: Test
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg gcc libx11-dev libgl-dev xvfb xauth
+          python -m pip install pytest pexpect PyYAML
+      - name: Unit, media and synthetic GLX integration tests
+        run: xvfb-run -a python -m pytest -q
+      - name: Portable build
+        run: |
+          python tools/build.py
+          python -I -S dist/we-render.pyz --version

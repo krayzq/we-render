@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "we-render"
+version = "0.1.0b1"
+description = "Linux CLI for original wallpaper-video extraction and beta native scene export"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "WE Render contributors"}]
+dependencies = ["rich==15.0.0"]
+
+[project.scripts]
+we-render = "we_render.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["we_render*"]
+
+[tool.setuptools.package-data]
+we_render = ["native/*.c"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
