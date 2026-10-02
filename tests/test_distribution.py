@@ -16,7 +16,7 @@ def build(path):
 def test_portable_isolated(tmp_path):
     app=build(tmp_path/'we-render.pyz')
     p=subprocess.run([sys.executable,'-I','-S',str(app),'--version'],capture_output=True,text=True)
-    assert p.returncode==0 and p.stdout.strip()=='0.1.0b1'
+    assert p.returncode==0 and p.stdout.strip()=='0.1.0b2'
     p=subprocess.run([sys.executable,'-I','-S',str(app),'--help'],capture_output=True,text=True)
     assert p.returncode==0 and '--wizard' in p.stdout
     with zipfile.ZipFile(app) as z:
@@ -32,7 +32,7 @@ def test_install_uninstall(tmp_path):
     cmd=[sys.executable,str(ROOT/'install.py'),'--prefix',str(prefix)]
     p=subprocess.run(cmd,capture_output=True,text=True);assert p.returncode==0,p.stderr
     launch=prefix/'bin/we-render';assert launch.is_file()
-    p=subprocess.run([str(launch),'--version'],capture_output=True,text=True);assert p.returncode==0 and p.stdout.strip()=='0.1.0b1'
+    p=subprocess.run([str(launch),'--version'],capture_output=True,text=True);assert p.returncode==0 and p.stdout.strip()=='0.1.0b2'
     (prefix/'kept.mp4').write_bytes(b'keep')
     assert subprocess.run(cmd+['--uninstall'],capture_output=True).returncode==0
     assert not launch.exists() and (prefix/'kept.mp4').read_bytes()==b'keep'
