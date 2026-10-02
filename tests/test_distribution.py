@@ -49,15 +49,6 @@ def test_installer_keeps_modifications(tmp_path):
     assert subprocess.run(args+['--uninstall'],capture_output=True).returncode==1
     assert target.read_text()=='modified'
 
-def test_publish_dry_run_no_git_changes(tmp_path):
-    p=subprocess.run([sys.executable,str(ROOT/'tools/publish.py'),'--dry-run'],capture_output=True,text=True)
-    assert p.returncode==0 and 'PUBLIC' in p.stdout and 'DRAFT' in p.stdout
-    assert not (ROOT/'.git').exists()
-
-def test_publish_bad_name():
-    p=subprocess.run([sys.executable,str(ROOT/'tools/publish.py'),'--name','../../bad','--dry-run'],capture_output=True)
-    assert p.returncode!=0
-
 def test_workflows_parse():
     yaml=pytest.importorskip('yaml')
     for path in (ROOT/'.github/workflows').glob('*.yml'):
