@@ -1,2 +1,0 @@
-include LICENSE README.md THIRD_PARTY.md
-recursive-include we_render/native *.c
