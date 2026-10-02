@@ -2,20 +2,20 @@
 
 # WE Render
 
-**Your wallpaper, as a file.** Linux CLI for extracting pre-rendered Wallpaper Engine video and exporting supported native scenes without desktop recording.
+Linux CLI for turning Wallpaper Engine media and supported native scenes into normal files.
 
-> **0.1.0b2 · Beta.** Native scene export depends on the installed Linux renderer and may not reproduce every Wallpaper Engine effect yet.
+> **0.1.0b3 · Beta.** Pre-rendered MPKG extraction is reliable. Native scene export depends on the installed Linux renderer and may not reproduce every effect yet.
 
 ## Install
 
-Download the **Linux ZIP** from Releases, unpack it, then run:
+Download the **Linux ZIP** from Releases, unpack it, then:
 
 ```sh
 ./install.sh
 ~/.local/bin/we-render --doctor
 ```
 
-The installer is non-interactive and never runs `pacman`, `yay`, `apt` or builds third-party packages for you.
+The installer is non-interactive. It never runs `pacman`, `yay`, `apt` or builds third-party packages.
 
 ## Use
 
@@ -28,12 +28,12 @@ we-render ./my-wallpaper/ --wizard
 we-render ./my-wallpaper/ --format png --at 5
 ```
 
-Scene defaults: **4K fit · 60 FPS · 30 s · H.264**.
+Default scene export: **4K fit · 60 FPS · 30 s · H.264**.
 
-Supported outputs: **MP4 · GIF · PNG · JPG**. Pre-rendered `.mpkg` video can be copied without re-encoding.
+Outputs: **MP4 · GIF · PNG · JPG**. A pre-rendered `.mpkg` can be extracted without re-encoding.
 
-For scene export you also need Wallpaper Engine assets, FFmpeg and a compatible native `linux-wallpaperengine` installation. The current installer does **not** build that renderer automatically.
+Scene export additionally needs FFmpeg, a C compiler, X11/XWayland, Wallpaper Engine assets from Steam, and a compatible native `linux-wallpaperengine` installation.
 
-[Usage guide](docs/USAGE.md) · [Changelog](CHANGELOG.md) · [License](LICENSE)
+No Windows, Wine, Proton, desktop recording or proprietary Wallpaper Engine assets are bundled.
 
-Not affiliated with Wallpaper Engine or Valve. No proprietary assets are included.
+MIT licensed. See [CHANGELOG.md](CHANGELOG.md).
