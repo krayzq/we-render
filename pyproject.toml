@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "WE Render contributors"}]
-dependencies = ["rich==15.0.0"]
+dependencies = []
 
 [project.scripts]
 we-render = "we_render.cli:main"
