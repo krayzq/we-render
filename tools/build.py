@@ -48,8 +48,7 @@ def build(out=None):
         add(z,'we-render/we-render.pyz',app.read_bytes(),True)
         for name in ['install.py','install.sh','README.md','LICENSE','THIRD_PARTY.md']:
             add(z,'we-render/'+name,(ROOT/name).read_bytes(),name.endswith('.sh'))
-        for folder in ['docs','licenses']:
-            for p in files_under(ROOT/folder):add(z,Path('we-render')/p.relative_to(ROOT),p.read_bytes())
+        add(z,'we-render/docs/USAGE.md',(ROOT/'docs/USAGE.md').read_bytes())
         add(z,'we-render/BUNDLED.json',(ROOT/'vendor/BUNDLED.json').read_bytes())
     (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in [app,source,portable]))
     print(json.dumps({'version':__version__,'artifacts':[str(app),str(source),str(portable)]},indent=2))
